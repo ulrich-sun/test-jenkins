@@ -14,7 +14,8 @@ pipeline {
         string(name: 'HOST_PORT', defaultValue: '8081', description: 'Host port to map')
         string(name: 'CONTAINER_PORT', defaultValue: '80', description: 'Container port to expose')
         string(name: 'SERVER_IP', defaultValue: '127.0.0.1', description: 'Deployment server IP address')
-        string(name: 'SERVER_USER', defaultValue: 'user', description: 'Deployment server username')
+        string(name: 'SERVER_USER', defaultValue: 'azureuser', description: 'Deployment server username')
+        string(name: 'DOCKER_IP', defaultValue: '172.17.0.1', description: 'Docker host IP address')
     }
     agent any
     stages {
@@ -34,7 +35,7 @@ pipeline {
                         docker rm -f  $IMAGE_NAME || true
                         docker run --rm -dp $HOST_PORT:$CONTAINER_PORT --name $IMAGE_NAME $IMAGE_NAME:$IMAGE_TAG
                         sleep 5
-                        curl -I http://localhost:$HOST_PORT| grep -i "200 OK"
+                        curl -I http://$DOCKER_IP:$HOST_PORT| grep -i "200 OK"
                         sleep 2
                         docker stop $IMAGE_NAME
                     '''
