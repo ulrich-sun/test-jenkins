@@ -13,7 +13,7 @@ pipeline {
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
         string(name: 'HOST_PORT', defaultValue: '8081', description: 'Host port to map')
         string(name: 'CONTAINER_PORT', defaultValue: '80', description: 'Container port to expose')
-        string(name: 'SERVER_IP', defaultValue: '127.0.0.1', description: 'Deployment server IP address')
+        string(name: 'SERVER_IP', defaultValue: '20.106.232.57', description: 'Deployment server IP address')
         string(name: 'SERVER_USER', defaultValue: 'azureuser', description: 'Deployment server username')
         string(name: 'DOCKER_IP', defaultValue: '172.17.0.1', description: 'Docker host IP address')
     }
@@ -65,12 +65,11 @@ pipeline {
                     }
                     sshagent (['server-ssh-credentials']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << EOF
-                            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-                            docker stop $IMAGE_NAME || true
-                            docker rm $IMAGE_NAME || true
-                            docker run -d -p $HOST_PORT:$CONTAINER_PORT --name $IMAGE_NAME $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-                            EOF
+                            ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+                            docker pull $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG ;
+                            docker rm -f $IMAGE_NAME || echo "no existing container to remove";
+                            docker run -d -p $HOST_PORT:$CONTAINER_PORT --name $IMAGE_NAME $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG;
+                            "
                         '''
                     }
                 }
