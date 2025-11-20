@@ -11,7 +11,7 @@ pipeline {
     parameters {
         string(name: 'IMAGE_NAME', defaultValue: 'myapp', description: 'Docker image name')
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
-        string(name: 'HOST_PORT', defaultValue: '8080', description: 'Host port to map')
+        string(name: 'HOST_PORT', defaultValue: '8081', description: 'Host port to map')
         string(name: 'CONTAINER_PORT', defaultValue: '80', description: 'Container port to expose')
         string(name: 'SERVER_IP', defaultValue: '127.0.0.1', description: 'Deployment server IP address')
         string(name: 'SERVER_USER', defaultValue: 'user', description: 'Deployment server username')
@@ -33,7 +33,7 @@ pipeline {
                      sh '''
                         docker run --rm -dp $HOST_PORT:$CONTAINER_PORT --name $IMAGE_NAME $IMAGE_NAME:$IMAGE_TAG
                         sleep 5
-                        curl -f http://localhost:$HOST_PORT|| exit 1
+                        curl -I http://localhost:$HOST_PORT| grep -i "200 OK"
                         sleep 2
                         docker stop $IMAGE_NAME
                     '''
